@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar />
+   
 
     <h2>Profile</h2>
 
@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import Navbar from '@/components/Navbar.vue'
+
 import EditProfileModal from '@/components/EditProfileModal.vue'
 import { useAuthStore } from '@/stores/auth'
 
