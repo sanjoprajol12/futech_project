@@ -1,57 +1,47 @@
-import { defineStore } from 'pinia';
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import api from '@/api'
 
-export const useAuthStore = defineStore('auth', {
-    state: () => ({
-        user: JSON.parse(localStorage.getItem('user') || 'null'),
-        returnUrl: null
-    }),
-    actions: {
-        async register(user: any) {
-            // Implementation placeholder - replace with actual API call
-            console.log('Registering user:', user);
+interface User {
+  id?: number
+  first_name: string
+  last_name: string
+  email: string
+  image?: string
+}
 
-            // Mock success
-            // In a real app, you'd use fetch or axios here
-            /*
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/users/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(user)
-            });
-            if (!response.ok) {
-                 const error = (data && data.message) || response.statusText;
-                 return Promise.reject(error);
-            }
-            */
+export const useAuthStore = defineStore('auth', () => {
+  const user = ref<User | null>(null)
+  const token = ref('')
 
-            // For now, let's imitate a success and maybe redirect
-            return Promise.resolve(user);
-        },
-        async login(user: any) {
-            console.log('Logging in user:', user);
-            // Mock API delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
+  const register = async (data: { first_name: string; last_name: string; email: string; password: string }) => {
+    const res = await api.post('/register', data)
+    user.value = res.data.user
+    token.value = res.data.token
+    // Save token locally if needed
+    localStorage.setItem('token', res.data.token)
+  }
 
-            // Mock success: set user state
-            // In real app, this would come from backend response
-            this.user = {
-                username: user.username,
-                token: 'mock-jwt-token-12345',
-                firstName: 'John', // Mock data
-                lastName: 'Doe'
-            };
+  const login = async (data: { email: string; password: string }) => {
+    const res = await api.post('/login', data)
+    user.value = res.data.user
+    token.value = res.data.token
+    localStorage.setItem('token', res.data.token)
+  }
 
-            // In a real app:
-            /*
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/users/authenticate`, {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify(user)
-            });
-            // ... handle response ...
-            */
+  const logout = async () => {
+    await api.post('/logout', {}, { headers: { Authorization: `Bearer ${token.value}` } })
+    user.value = null
+    token.value = ''
+    localStorage.removeItem('token')
+  }
 
-            return Promise.resolve(this.user);
-        }
+  const fetchUser = async () => {
+    if (localStorage.getItem('token')) {
+      const res = await api.get('/user', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
+      user.value = res.data
     }
-});
+  }
+
+  return { user, token, register, login, logout, fetchUser }
+})

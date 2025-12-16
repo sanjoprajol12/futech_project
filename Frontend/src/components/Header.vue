@@ -9,7 +9,7 @@
           <li><router-link to="/blogs">Blogs</router-link></li>
           <li><router-link to="/login">Login</router-link></li>
           <li><router-link to="/register">Register</router-link></li>
-
+          <li><router-link to="/createblog">Create Blog</router-link></li>
           <li><router-link to="/profile">Profile</router-link></li>
           
         </ul>

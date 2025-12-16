@@ -5,6 +5,7 @@ import Register from '../pages/Register.vue'
 import Createblog from '../pages/Createblog.vue'
 import Profile from '../pages/Profile.vue'
 import ForgotAccount from '../pages/ForgotAccount.vue'
+import Blog from '../pages/Blog.vue'
 
 
 
@@ -15,6 +16,7 @@ const routes = [
     { path: '/createblog', component: Createblog },
     { path: '/profile', component: Profile },
     { path: '/forgotaccount', component: ForgotAccount },
+    { path: '/blog', component: Blog },
 
 
 ]
