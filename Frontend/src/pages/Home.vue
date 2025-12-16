@@ -1,4 +1,10 @@
 <template>
-  <h2>Home Page</h2>
-  <a href="Login">Login</a>
+  <div class="dashboard">
+    <Navbar/>
+    <h1>Dashboard</h1>
+  </div>
 </template>
+
+<script setup lang="ts">
+import Navbar from '@/components/Navbar.vue'
+</script>

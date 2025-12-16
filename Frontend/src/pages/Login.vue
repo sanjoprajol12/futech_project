@@ -1,22 +1,23 @@
 
 <template>
 
-  <div >
-    <div >
+  <div class ="main" >
+    <div class="form">
         <h2>Login</h2>
         <form @submit.prevent="login">
             <div class="form-group">
-                <label> Username or Email</label>
-                <input v-model="email" placeholder="Username or Email" />
+                <label>Email</label><br>
+                <input type="email" v-model="email" placeholder="Email" />
             </div>
             <div class="form-group">
-                <label> Password</label>
-                <input v-model="password" type="password" placeholder="Password" />
+                <label> Password</label><br></br>
+                <input type="password" v-model="password" placeholder="Password" />
             </div>
             <button type="submit" class="btn-primary">Login</button>
             <div>
-                <p>Don't have an account?</p>
-                <router-link to="/register">Register</router-link>
+                <p></p>
+                <router-link to="/register">on't have an account?</router-link>
+                <router-link to="/forgotaccount">Forgot Account?</router-link>
             </div>
 
         </form>
