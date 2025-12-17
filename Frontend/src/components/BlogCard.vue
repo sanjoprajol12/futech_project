@@ -1,10 +1,12 @@
 <template>
   <div class="blog-card">
-    <img v-if="blog.image" :src="blog.image" alt="Blog Image" class="blog-img" />
-    <h3>{{ blog.title }}</h3>
-    <p class="author">By {{ blog.author }} | {{ blog.date }}</p>
-    <p class="snippet">{{ blog.snippet }}</p>
-    <router-link :to="`/blog/${blog.id}`" class="read-more">Read More</router-link>
+    <h3 class="blog-title">{{ blog.title }}</h3>
+    <p class="author">
+      By {{ blog.author || 'Anonymous' }} 
+      <span v-if="blog.created_at"> | {{ formatDate(blog.created_at) }}</span>
+    </p>
+    <p class="content">{{ truncateContent(blog.content) }}</p>
+    <router-link :to="`/blog/${blog.id}`" class="read-more">Read More →</router-link>
   </div>
 </template>
 
@@ -12,44 +14,79 @@
 interface Blog {
   id: number
   title: string
-  author: string
-  date: string
-  snippet: string
-  image?: string
+  content: string
+  author?: string
+  created_at?: string
 }
 
 const props = defineProps<{
   blog: Blog
 }>()
+
+// Truncate content to show snippet
+const truncateContent = (content: string) => {
+  const maxLength = 150
+  if (content.length > maxLength) {
+    return content.substring(0, maxLength) + '...'
+  }
+  return content
+}
+
+// Format date to readable format
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric' 
+  })
+}
 </script>
 
 <style scoped>
 .blog-card {
-  border: 1px solid #ddd;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  background: #fff;
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  padding: 20px;
+  border-radius: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.blog-img {
-  width: 100%;
-  max-height: 200px;
-  object-fit: cover;
-  border-radius: 6px;
+
+.blog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  border-color: #3b82f6;
 }
-.author {
-  font-size: 0.9rem;
-  color: #555;
-}
-.snippet {
-  margin: 10px 0;
-}
-.read-more {
-  color: #1e40af;
-  text-decoration: none;
+
+.blog-title {
+  font-size: 1.5rem;
   font-weight: bold;
+  color: #fff;
+  margin-bottom: 8px;
 }
+
+.author {
+  font-size: 0.875rem;
+  color: #a1a1aa;
+  margin-bottom: 12px;
+}
+
+.content {
+  color: #d4d4d8;
+  margin: 12px 0;
+  line-height: 1.6;
+}
+
+.read-more {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-block;
+  margin-top: 8px;
+}
+
 .read-more:hover {
+  color: #60a5fa;
   text-decoration: underline;
 }
 </style>
