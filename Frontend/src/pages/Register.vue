@@ -1,26 +1,91 @@
 <template>
-  <div class="main">
-    <div class="form">
-      <form @submit.prevent="register">
-        <label>First Name</label><br>
-        <input type="text" v-model="user.name" placeholder="Name" required /><br/>
+  <div class="min-h-screen flex items-center justify-center bg-zinc-900 p-4">
+    
+    <div class="bg-zinc-800 shadow-xl rounded-xl p-8 w-full max-w-md">
+      
+      <h2 class="text-3xl font-bold text-white mb-8 text-center">Create Your Account</h2>
 
-        <label>Email</label><br>
-        <input type="email" v-model="user.email" placeholder="Email" required /><br/>
+      <form @submit.prevent="register" class="space-y-6">
+        
+        <div>
+          <label class="text-white ">First Name</label><br></br>
+          <input 
+            type="text" 
+            id="name"
+            v-model="user.name" 
+            
+            required
+            class=" rounded-lg w-full text-white h-10 border border-white "
+          />
+        </div>
+        <div>
+          <label class="text-white ">Last Name</label><br></br>
+          <input 
+            type="text" 
+            id="name"
+            v-model="user.last_name" 
+            
+            required
+            class=" rounded-lg w-full text-white h-10 "
+          />
+        </div>
 
-        <label>Password</label><br>
-        <input type="password" v-model="user.password" placeholder="Password" required /><br/>
+        <div>
+          <label style="color: white;" >Email</label><br></br>
+          <input 
+            type="email" 
+            id="email"
+            v-model="user.email" 
+       
+            required
+            class=" rounded-lg w-full text-white h-10 "/>
+        </div>
 
-        <label>Confirm Password</label><br>
-        <input type="password" v-model="user.password_confirmation" placeholder="Confirm Password" required /><br/>
+        <div>
+          <label style="color: white;" >Password</label><br></br>
+          <input 
+            type="password" 
+            id="password"
+            v-model="user.password" 
+            
+            required
+class="border-white rounded-lg w-full text-white h-10 "
+          />
+        </div>
 
-        <button type="submit">Register</button>
+        <div>
+          <label style="color: white;" >Confirm Password</label><br></br>
+          <input 
+            type="password" 
+            id="password_confirmation"
+            v-model="user.password_confirmation" 
+            
+            required
+            class="border-white rounded-lg w-full text-white h-10 "/>
+        </div>
+
+        <div>
+          <button 
+            type="submit"
+            class="boarder-solid bg-white text-black pa-3 rounded-lg w-full cursor-pointer"
+          >
+            Register
+          </button>
+        </div>
+        
+        <p class="text-sm text-center text-white">
+            Already have an account? 
+            <router-link to="/login" class="font-medium text-indigo-600 hover:text-indigo-500">
+                Log in
+            </router-link>
+        </p>
       </form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+// Your script remains unchanged
 import { reactive } from 'vue'
 import api from '@/api'
 import { useRouter } from 'vue-router'
@@ -42,10 +107,13 @@ const register = async () => {
       password: user.password,
       password_confirmation: user.password_confirmation
     })
-    alert(res.data.message) // tells to verify email
-    router.push('/Login')
+    // Added a more user-friendly message based on standard registration flow
+    alert('Registration successful! Please check your email to verify your account.') 
+    router.push('/login')
   } catch (err: any) {
-    alert(err.response?.data?.message || 'Registration failed')
+    // Improved error handling to show specific backend errors
+    const errorMessage = err.response?.data?.message || err.response?.data?.errors?.email?.[0] || 'Registration failed. Please check your inputs.'
+    alert(errorMessage)
   }
 }
 </script>

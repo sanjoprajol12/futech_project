@@ -1,4 +1,5 @@
 <template>
+    
   <footer class="footer">
     <div class="container">
       <p>&copy; 2025 MyBlog. All rights reserved.</p>

@@ -1,8 +1,4 @@
-export interface Blog {
-    title: string;
-    content: string;
-    image: File;  
-}
+
 export interface User {
     name: string;
     last_name: string;
@@ -20,3 +16,25 @@ export interface Register {
     email: string;
     password: string;
 }
+export interface Blog {
+    id: number;
+    title: string;
+    author: string;
+    date: string;
+    snippet: string;
+    image?: string;
+}
+export interface CreateBlog {
+    title: string;
+    content: string;
+    image: File;  
+}
+export interface UpdateBlog {
+    title: string;
+    content: string;
+    image: File;  
+}
+export interface DeleteBlog {
+    id: number;
+}
+    
