@@ -6,7 +6,7 @@
         <ul class="nav-links">
           <li><router-link to="/">Home</router-link></li>
           
-          <li><router-link to="/blogs">Blogs</router-link></li>
+          <li><router-link to="/blog">Blogs</router-link></li>
           <li><router-link to="/login">Login</router-link></li>
           <li><router-link to="/register">Register</router-link></li>
           <li><router-link to="/createblog">Create Blog</router-link></li>

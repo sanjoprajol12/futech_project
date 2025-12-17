@@ -3,6 +3,16 @@
     <div class="bg-zinc-800 shadow-xl rounded-xl p-8 w-full max-w-2xl">
       <h2 class="text-3xl font-bold text-white mb-8 text-center">Create New Blog</h2>
       
+      <!-- Success Message -->
+      <div v-if="successMessage" class="bg-green-600 text-white p-4 rounded-lg mb-6">
+        {{ successMessage }}
+      </div>
+
+      <!-- Error Message -->
+      <div v-if="errorMessage" class="bg-red-600 text-white p-4 rounded-lg mb-6">
+        {{ errorMessage }}
+      </div>
+      
       <form @submit.prevent="createBlog" class="space-y-6">
         <div>
           <label class="block text-zinc-300 text-sm font-medium mb-2">Blog Title</label>
@@ -11,7 +21,8 @@
             v-model="blog.title" 
             placeholder="Enter blog title" 
             required
-            class="w-full h-10 rounded-lg text-3xl text-zinc-200"
+            :disabled="loading"
+            class="w-full px-4 py-2 rounded-lg bg-zinc-700 text-white border border-zinc-600 focus:outline-none focus:border-blue-500"
           />
         </div>
 
@@ -21,16 +32,18 @@
             v-model="blog.content" 
             placeholder="Write your content here..." 
             required
-            rows="6"
-            class="w-full h-60 rounded-lg text-3xl text-zinc-200"
+            rows="10"
+            :disabled="loading"
+            class="w-full px-4 py-2 rounded-lg bg-zinc-700 text-white border border-zinc-600 focus:outline-none focus:border-blue-500"
           ></textarea>
         </div>
 
         <button 
           type="submit" 
-          class="w-full text-white font-bold py-3 px-4 rounded-lg cursor-pointer"
+          :disabled="loading"
+          class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg cursor-pointer transition-colors"
         >
-          Publish Blog
+          {{ loading ? 'Publishing...' : 'Publish Blog' }}
         </button>
       </form>
     </div>
@@ -38,23 +51,49 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import api from '@/api'
+
+const router = useRouter()
 
 const blog = reactive({
     title: '',
-    content: '',
-    image: null as File | null
+    content: ''
 })
 
-const onImageChange = (e: Event) => {
-    const target = e.target as HTMLInputElement
-    if (target.files && target.files[0]) {
-        blog.image = target.files[0]
-    }
-}
+const loading = ref(false)
+const successMessage = ref('')
+const errorMessage = ref('')
 
-const createBlog = () => {
-    console.log(blog)
-    alert(`Blog Title: ${blog.title}\nBlog Content: ${blog.content}`)
+const createBlog = async () => {
+    loading.value = true
+    successMessage.value = ''
+    errorMessage.value = ''
+
+    try {
+        // Post blog to backend API
+        const response = await api.post('/blogs', {
+            title: blog.title,
+            content: blog.content
+        })
+
+        successMessage.value = 'Blog published successfully! Redirecting...'
+        
+        // Reset form
+        blog.title = ''
+        blog.content = ''
+
+        // Redirect to blogs page after 2 seconds
+        setTimeout(() => {
+            router.push('/blogs')
+        }, 2000)
+
+    } catch (error: any) {
+        errorMessage.value = error.response?.data?.message || 'Failed to create blog. Please try again.'
+        console.error('Error creating blog:', error)
+    } finally {
+        loading.value = false
+    }
 }
 </script>
