@@ -1,16 +1,51 @@
 <template>
-  <div>
-   
+  <div class="min-h-screen bg-zinc-900 p-4 md:p-8">
+    
+    <div class="bg-zinc-900">
+      
+      <h2 class="text-3xl font-bold text-white border-b pb-4 mb-6">Your Profile</h2>
 
-    <h2>Profile</h2>
+      <div v-if="user" class="space-y-4">
+        
+        
 
-    <div v-if="user">
-      <img v-if="user.image" :src="user.image" alt="Profile Image" width="120" />
-      <p>Email: {{ user.email }}</p>
-      <p>First Name: {{ user.first_name }}</p>
-      <p>Last Name: {{ user.last_name }}</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div class="p-3 bg-zinc-800 rounded-lg">
+                <p class="text-sm font-medium  text-white">Email</p>
+                <p class="text-lg font-semibold text-white">{{ user.email }}</p>
+            </div><br>
 
-      <button @click="editProfile">Edit Profile</button>
+            <div class="p-3 bg-zinc-800 rounded-lg">
+                <p class="text-sm font-medium text-white">First Name</p>
+                <p class="text-lg text-white">{{ user.first_name }}</p>
+            </div><br>
+            <div class="p-3 bg-zinc-800 rounded-lg">
+                <p class="text-sm font-medium text-white">Last Name</p>
+                <p class="text-lg text-white">{{ user.last_name }}</p>
+            </div><br>
+
+            <div class="p-3 bg-zinc-800 rounded-lg md:col-span-1">
+                <p class="text-sm font-medium text-white">Image</p>
+                <p class="text-lg text-white">{{ user.image }}</p>
+            </div><br>
+            
+            </div>
+
+        <div class="pt-6 border-t mt-6">  
+            <button 
+                @click="editProfile"
+                class="bg-blue-600 text-white  "
+            >
+                Edit Profile
+            </button>
+        </div>
+      </div>
+      
+      <div v-else class="text-center py-10">
+          <p class="text-gray-500">Loading user data...</p>
+      </div>
+
     </div>
 
     <EditProfileModal
@@ -23,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+// Script remains the same
 import { ref } from 'vue'
 
 import EditProfileModal from '@/components/EditProfileModal.vue'
@@ -52,6 +88,7 @@ const closeModal = () => {
 }
 
 const save = (updatedUser: typeof user.value) => {
+  // Assume successful API call here to update authStore.user and state
   user.value = updatedUser
   openModal.value = false
 }
