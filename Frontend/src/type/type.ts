@@ -5,7 +5,7 @@ export interface User {
     email: string;
     password: string;
 }
-export interface Login {
+export interface login {
     email: string;
     password: string;
 }

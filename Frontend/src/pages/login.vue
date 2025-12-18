@@ -3,7 +3,7 @@
     
     <div class="bg-zinc-800 shadow-xl rounded-xl p-8 w-full max-w-sm">
       
-      <h2 class="text-3xl font-bold text-white mb-8 text-center">Login</h2>
+      <h2 class="text-3xl font-bold text-white mb-8 text-center">login</h2>
 
       <form @submit.prevent="login" class="space-y-6">
         
@@ -35,7 +35,7 @@
           type="submit" 
           class="boarder-solid bg-white text-black pa-3 rounded-lg w-full"
           >
-          Login
+          login
         </button>
 
         <div class="flex justify-between items-center pt-2">
@@ -74,13 +74,25 @@ const password = ref('')
 
 const login = async () => {
   try {
-    const res = await api.post('/Login', { email: email.value, password: password.value })
-    localStorage.setItem('token', res.data.token)
-    alert(res.data.message)
-    router.push('/Profile')
+    const res = await api.post('/login', {
+      email: email.value,
+      password: password.value,
+    });
+
+    // Save token correctly — note the nested data
+    const token = res.data.data.token; // <-- THIS is the token
+    localStorage.setItem('auth_token', token);
+
+    console.log('Login successful, token saved:', token);
+
+    alert(res.data.message);
+    router.push('/Profile');
   } catch (err: any) {
-    const errorMessage = err.response?.data?.error || 'Login failed. Please check your credentials.'
-    alert(errorMessage)
+    const errorMessage = err.response?.data?.message || 'Login failed. Check credentials';
+    alert(errorMessage);
   }
-}
+};
+
+
+
 </script>
