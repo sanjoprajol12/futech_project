@@ -17,13 +17,10 @@
             </div><br>
 
             <div class="p-3 bg-zinc-800 rounded-lg">
-                <p class="text-sm font-medium text-white">First Name</p>
-                <p class="text-lg text-white">{{ user.first_name }}</p>
+                <p class="text-sm font-medium text-white">Name</p>
+                <p class="text-lg text-white">{{ user.name }}</p>
             </div><br>
-            <div class="p-3 bg-zinc-800 rounded-lg">
-                <p class="text-sm font-medium text-white">Last Name</p>
-                <p class="text-lg text-white">{{ user.last_name }}</p>
-            </div><br>
+            
 
             <div class="p-3 bg-zinc-800 rounded-lg md:col-span-1">
                 <p class="text-sm font-medium text-white">Image</p>
@@ -71,7 +68,7 @@ const openModal = ref(false)
 const user = ref({
   email: '',
   first_name: '',
-  last_name: '',
+
   image: ''
 })
 
