@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen flex p-5 items-center justify-center bg-zinc-900 p-4">
+  <div class="min-h-screen flex items-center justify-center bg-zinc-900 p-4">
     
     <div class="bg-zinc-800 shadow-xl rounded-xl p-8 w-full max-w-sm">
       
-      <h2 class="text-3xl font-bold text-white mb-8 text-center">Login</h2>
+      <h2 class="text-3xl font-bold text-white mb-8 text-center">login</h2>
 
       <form @submit.prevent="login" class="space-y-6">
         
@@ -35,7 +35,7 @@
           type="submit" 
           class="boarder-solid bg-white text-black pa-3 rounded-lg w-full"
           >
-          Login
+          login
         </button>
 
         <div class="flex justify-between items-center pt-2">
@@ -74,12 +74,12 @@ const password = ref('')
 
 const login = async () => {
   try {
-    const res = await api.post('/Login', { email: email.value, password: password.value })
+    const res = await api.post('/login', { email: email.value, password: password.value })
     localStorage.setItem('token', res.data.token)
     alert(res.data.message)
     router.push('/Profile')
   } catch (err: any) {
-    const errorMessage = err.response?.data?.error || 'Login failed. Please check your credentials.'
+    const errorMessage = err.response?.data?.error || 'login failed. Please check your credentials.'
     alert(errorMessage)
   }
 }

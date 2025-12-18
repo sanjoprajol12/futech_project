@@ -7,7 +7,7 @@
           <li><router-link to="/">Home</router-link></li>
           
           <li><router-link to="/blog">Blogs</router-link></li>
-          <li><router-link to="/login">Login</router-link></li>
+          <li><router-link to="/login">login</router-link></li>
           <li><router-link to="/register">Register</router-link></li>
           <li><router-link to="/createblog">Create Blog</router-link></li>
           <li><router-link to="/profile">Profile</router-link></li>
