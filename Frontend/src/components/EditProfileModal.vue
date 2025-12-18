@@ -4,9 +4,10 @@
       <h2>Edit Profile</h2>
 
       <form @submit.prevent="submit">
-        <input v-model="form.first_name" type="text" placeholder="First Name" />
-        <input v-model="form.last_name" type="text" placeholder="Last Name" />
-        <input v-model="form.email" type="email" placeholder="Email" />
+        <label for="name">Name</label><br><br>
+        <input v-model="form.name" type="text" placeholder="Name" /><br><br>
+        <label for="password">Change Password</label><br><br>
+        <input v-model="form.password" type="password" placeholder="Password" />
 
         <div class="actions">
           <button type="submit">Save</button>
@@ -32,17 +33,16 @@ const props = defineProps<{
 const emit = defineEmits(['save', 'close'])
 
 const form = reactive({
-  first_name: '',
-  last_name: '',
-  email: ''
+  name: '',
+  password: ''
 })
 
 watch(
   () => props.user,
   (u) => {
-    form.first_name = u.first_name
-    form.last_name = u.last_name
-    form.email = u.email
+    form.name = u.first_name
+    form.password = u.last_name
+    
   },
   { immediate: true }
 )
