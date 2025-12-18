@@ -86,7 +86,7 @@ const createBlog = async () => {
 
         // Redirect to blogs page after 2 seconds
         setTimeout(() => {
-            router.push('/blogs')
+            router.push('/blog')
         }, 2000)
 
     } catch (error: any) {

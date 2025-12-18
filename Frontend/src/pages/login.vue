@@ -74,13 +74,25 @@ const password = ref('')
 
 const login = async () => {
   try {
-    const res = await api.post('/login', { email: email.value, password: password.value })
-    localStorage.setItem('token', res.data.token)
-    alert(res.data.message)
-    router.push('/Profile')
+    const res = await api.post('/login', {
+      email: email.value,
+      password: password.value,
+    });
+
+    // Save token correctly — note the nested data
+    const token = res.data.data.token; // <-- THIS is the token
+    localStorage.setItem('auth_token', token);
+
+    console.log('Login successful, token saved:', token);
+
+    alert(res.data.message);
+    router.push('/Profile');
   } catch (err: any) {
-    const errorMessage = err.response?.data?.error || 'login failed. Please check your credentials.'
-    alert(errorMessage)
+    const errorMessage = err.response?.data?.message || 'Login failed. Check credentials';
+    alert(errorMessage);
   }
-}
+};
+
+
+
 </script>
