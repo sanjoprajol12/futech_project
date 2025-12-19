@@ -75,7 +75,7 @@ const register = async () => {
     })
     // Added a more user-friendly message based on standard registration flow
     alert('Registration successful! Please check your email to verify your account.')
-    router.push('/login')
+    router.push('/two_factor')
   } catch (err: any) {
     // Improved error handling to show specific backend errors
     const errorMessage = err.response?.data?.message || err.response?.data?.errors?.email?.[0] || 'Registration failed. Please check your inputs.'

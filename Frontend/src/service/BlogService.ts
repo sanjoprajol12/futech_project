@@ -1,5 +1,4 @@
-import { Blog } from '@/types/types'
-
+import type { Blog } from "@/type/type"
 // Key for localStorage
 const BLOGS_KEY = 'blogs'
 
@@ -36,4 +35,8 @@ export const updateBlog = (updatedBlog: Blog & { id: number }) => {
 export const deleteBlog = (id: number) => {
   const blogs = getBlogs().filter(b => b.id !== id)
   localStorage.setItem(BLOGS_KEY, JSON.stringify(blogs))
+}
+export const getBlogById = (id: number) => {
+  const blogs = getBlogs()
+  return blogs.find(blog => blog.id === id) || null
 }

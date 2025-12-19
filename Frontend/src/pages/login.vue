@@ -86,7 +86,7 @@ const login = async () => {
     console.log('Login successful, token saved:', token);
 
     alert(res.data.message);
-    router.push('/Profile');
+    router.push('/two_factor');
   } catch (err: any) {
     const errorMessage = err.response?.data?.message || 'Login failed. Check credentials';
     alert(errorMessage);

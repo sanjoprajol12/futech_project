@@ -26,7 +26,7 @@ const login = async () => {
     const res = await api.post('/Login', { email: email.value, password: password.value })
     localStorage.setItem('token', res.data.token)
     alert(res.data.message)
-    router.push('/Profile')
+    router.push('/forgotpass')
   } catch (err: any) {
     const errorMessage = err.response?.data?.error || 'Login failed. Please check your credentials.'
     alert(errorMessage)

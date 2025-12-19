@@ -31,52 +31,33 @@
 </template>
 
 <script setup lang="ts">
+import { getBlogs } from '@/service/BlogService'
 import { ref, onMounted } from 'vue'
 import BlogCard from '@/components/BlogCard.vue'
-import api from '@/api'
-
-interface Blog {
-  id: number
-  title: string
-  content: string
-  author?: string
-  created_at?: string
-}
+import type { Blog } from '@/type/type'
 
 const blogs = ref<Blog[]>([])
 const loading = ref(false)
 const error = ref('')
 
-// Fetch blogs from API
-const fetchBlogs = async () => {
+const fetchBlogs = () => {
   loading.value = true
   error.value = ''
 
   try {
-    const response = await api.get('/blogs')
-
-    // Backend shape:
-    // { success, data: { data: Blog[], meta, links } }
-    const collection = response.data.data
-    const items = Array.isArray(collection?.data) ? collection.data : []
-
-    blogs.value = items.map((blog: any) => ({
-      id: blog.id,
-      title: blog.title,
-      content: blog.content,
-      author: blog.author?.name ?? 'Anonymous',
-      created_at: blog.created_at,
+    const fetchedBlogs = getBlogs()
+    blogs.value = fetchedBlogs.map((blog: any) => ({
+      ...blog,
+      content: blog.content || blog.snippet || ''
     }))
-  } catch (err: any) {
-    error.value = err.response?.data?.message || 'Failed to load blogs. Please try again.'
-    console.error('Error fetching blogs:', err)
+  } catch (err) {
+    console.error('Failed to load blogs from localStorage:', err)
+    error.value = 'Failed to load blogs from localStorage.'
   } finally {
     loading.value = false
   }
 }
 
-// Fetch blogs when component mounts
-onMounted(() => {
-  fetchBlogs()
-})
+onMounted(() => fetchBlogs())
+
 </script>

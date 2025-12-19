@@ -23,7 +23,7 @@
         </p>
 
         <div
-          class="prose prose-invert max-w-none"
+          class="text-white prose prose-invert max-w-none"
           v-html="blog.content"
         ></div>
       </div>
@@ -35,47 +35,40 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import api from '@/api'
+import { getBlogById } from '@/service/BlogService'
 
 interface Blog {
   id: number
   title: string
   content: string
   author?: string
-  created_at?: string
+  date?: string
 }
 
 const route = useRoute()
 const blog = ref<Blog | null>(null)
-const loading = ref(false)
+const loading = ref(true)
 const error = ref('')
 
-const fetchBlog = async () => {
-  loading.value = true
-  try {
-    const response = await api.get(`/blogs/${route.params.id}`)
-    blog.value = {
-      id: response.data.data.id,
-      title: response.data.data.title,
-      content: response.data.data.content,
-      author: response.data.data.author?.name,
-      created_at: response.data.data.created_at,
-    }
-  } catch (err: any) {
-    error.value = 'Failed to load blog'
-  } finally {
-    loading.value = false
+onMounted(() => {
+  const id = Number(route.params.id)
+  const foundBlog = getBlogById(id)
+
+  if (!foundBlog) {
+    error.value = 'Blog not found'
+  } else {
+    blog.value = foundBlog
   }
-}
+
+  loading.value = false
+})
 
 const formattedDate = computed(() => {
-  if (!blog.value?.created_at) return ''
-  return new Date(blog.value.created_at).toLocaleDateString('en-US', {
+  if (!blog.value?.date) return ''
+  return new Date(blog.value.date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   })
 })
-
-onMounted(fetchBlog)
 </script>
