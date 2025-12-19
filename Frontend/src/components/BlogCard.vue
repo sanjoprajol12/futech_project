@@ -1,4 +1,4 @@
-<template>
+<<template>
   <div class="blog-card">
     <h3 class="blog-title">{{ blog.title }}</h3>
     <p class="author">
@@ -90,3 +90,4 @@ const formatDate = (dateString: string) => {
   text-decoration: underline;
 }
 </style>
+>

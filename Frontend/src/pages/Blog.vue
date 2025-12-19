@@ -54,7 +54,19 @@ const fetchBlogs = async () => {
 
   try {
     const response = await api.get('/blogs')
-    blogs.value = response.data
+
+    // Backend shape:
+    // { success, data: { data: Blog[], meta, links } }
+    const collection = response.data.data
+    const items = Array.isArray(collection?.data) ? collection.data : []
+
+    blogs.value = items.map((blog: any) => ({
+      id: blog.id,
+      title: blog.title,
+      content: blog.content,
+      author: blog.author?.name ?? 'Anonymous',
+      created_at: blog.created_at,
+    }))
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Failed to load blogs. Please try again.'
     console.error('Error fetching blogs:', err)
