@@ -40,19 +40,34 @@ const blogs = ref<Blog[]>([])
 const loading = ref(false)
 const error = ref('')
 
-const fetchBlogs = () => {
+const fetchBlogs = async () => {
   loading.value = true
   error.value = ''
 
   try {
-    const fetchedBlogs = getBlogs()
+    const fetchedBlogs = await getBlogs()
+    
+    // Ensure we have an array
+    if (!Array.isArray(fetchedBlogs)) {
+      console.error('API did not return an array:', fetchedBlogs)
+      blogs.value = []
+      error.value = 'Invalid response format from server'
+      return
+    }
+    
     blogs.value = fetchedBlogs.map((blog: any) => ({
       ...blog,
       content: blog.content || blog.snippet || ''
     }))
-  } catch (err) {
-    console.error('Failed to load blogs from localStorage:', err)
-    error.value = 'Failed to load blogs from localStorage.'
+  } catch (err: any) {
+    console.error('Failed to load blogs:', err)
+    if (err.response?.data?.message) {
+        error.value = err.response.data.message
+    } else if (err.message) {
+        error.value = err.message
+    } else {
+        error.value = 'Failed to load blogs. Please check if the backend is running.'
+    }
   } finally {
     loading.value = false
   }

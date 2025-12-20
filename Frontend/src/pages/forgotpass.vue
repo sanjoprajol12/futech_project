@@ -3,7 +3,7 @@
 
     <div class="bg-zinc-800 shadow-xl rounded-xl p-8 w-full max-w-md">
             <h1 class="text-3xl font-bold text-white mb-8 text-center">Two Factor Authentication</h1>
-            <form>
+            <form @submit.prevent="submit">
                 <label for="code" class="text-white text-2xl">Verification Code</label>
                 <input class="rounded-lg w-full text-white h-10 border-white" type="text" id="code" v-model="code" required>
                 <button class="boarder-solid bg-white text-black pa-3 rounded-lg w-full cursor-pointer" type="submit">Submit</button>
@@ -13,23 +13,20 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import api from '@/api'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-
 const code = ref('')
 
-const login = async () => {
-  try {
-    const res = await api.post('/forgotpass', { code: code.value })
-    localStorage.setItem('token', res.data.token)
-    alert(res.data.message)
-    router.push('/changepass')
-  } catch (err: any) {
-    const errorMessage = err.response?.data?.error || 'Login failed. Please check your credentials.'
-    alert(errorMessage)
-  }
+const submit = () => {
+    // We just save the code and move to password reset page
+    // The final Atomic Reset request will verify everything.
+    if (!code.value) {
+        alert('Please enter the code')
+        return
+    }
+    localStorage.setItem('reset_otp', code.value)
+    router.push('/updatepassword')
 }
 </script>
 <style scoped>

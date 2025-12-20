@@ -22,19 +22,20 @@ export interface Blog {
     author: string;
     date: string;
     snippet: string;
+    content: string;
     image?: string;
 }
 export interface CreateBlog {
     title: string;
     content: string;
-    image: File;  
+    image: File;
 }
 export interface UpdateBlog {
     title: string;
     content: string;
-    image: File;  
+    image: File;
 }
 export interface DeleteBlog {
     id: number;
 }
-    
+

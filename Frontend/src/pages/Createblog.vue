@@ -11,14 +11,6 @@
           class="rounded-lg w-full text-white h-10 border-white p-2 rounded text-black"
           required
         />
-        <label class="text-white block">Author</label>
-        <input
-          v-model="author"
-          type="text"
-          placeholder="Author"
-          class="rounded-lg w-full text-white h-10 border-white p-2 rounded text-black"
-          required
-        />
         <label class="text-white block">Content</label>
         <textarea
           v-model="content"
@@ -41,21 +33,39 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { createBlog } from '@/service/BlogService'
+import api from '@/api'
 
 const title = ref('')
 const content = ref('')
-const author = ref('')
 const router = useRouter()
 
-const submitBlog = () => {
-  createBlog({
-    title: title.value,
-    content: content.value,
-    snippet: content.value.substring(0, 100) + '...',
-    author: author.value,
-    date: new Date().toISOString()
-  })
-  router.push('/blog') // redirect to blog list
+const submitBlog = async () => {
+  try {
+      console.log('Creating blog with:', { title: title.value, content: content.value })
+      
+      // Send as JSON, not FormData
+      await api.post('/blogs', {
+        title: title.value,
+        content: content.value
+      })
+      
+      alert('Blog created successfully!')
+      router.push('/blog')
+  } catch (e: any) {
+      console.error('Blog creation error:', e)
+      console.error('Error response:', e.response?.data)
+      
+      let errorMsg = 'Failed to create blog.'
+      
+      if (e.response?.data?.message) {
+          errorMsg += '\n' + e.response.data.message
+      } else if (e.response?.data?.errors) {
+          errorMsg += '\n' + JSON.stringify(e.response.data.errors, null, 2)
+      } else if (e.message) {
+          errorMsg += '\n' + e.message
+      }
+      
+      alert(errorMsg)
+  }
 }
 </script>

@@ -1,41 +1,32 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
-export interface Blog {
-  id: number
-  title: string
-  content: string
-  snippet: string
-  author: string
-  date: string
-  image?: string
-}
+import { getBlogs, createBlog as serviceCreate, updateBlog as serviceUpdate, deleteBlog as serviceDelete } from '@/service/BlogService'
+import type { Blog } from '@/type/type'
 
 export const useBlogStore = defineStore('blog', () => {
   const blogs = ref<Blog[]>([])
 
-  const addBlog = (blog: Omit<Blog, 'id' | 'date' | 'snippet'>) => {
-    const id = blogs.value.length + 1
-    const date = new Date().toISOString().split('T')[0]
-    const snippet = blog.content.substring(0, 100) + '...'
-    blogs.value.push({ id, date, snippet, ...blog })
+  const fetchBlogs = async () => {
+    blogs.value = await getBlogs()
   }
 
-  const updateBlog = (id: number, updatedBlog: Partial<Blog>) => {
-    const index = blogs.value.findIndex(b => b.id === id)
-    if (index !== -1) {
-      blogs.value[index] = { ...blogs.value[index], ...updatedBlog }
-      blogs.value[index].snippet = blogs.value[index].content.substring(0, 100) + '...'
-    }
+  const addBlog = async (blog: FormData) => {
+    await serviceCreate(blog)
+    await fetchBlogs()
   }
 
-  const deleteBlog = (id: number) => {
-    blogs.value = blogs.value.filter(b => b.id !== id)
+  const updateBlog = async (id: number, blog: FormData) => {
+    await serviceUpdate(id, blog)
+    await fetchBlogs()
   }
 
-  const getBlogsByUser = (author: string) => {
-    return blogs.value.filter(b => b.author === author)
+  const deleteBlog = async (id: number) => {
+    await serviceDelete(id)
+    await fetchBlogs()
   }
 
-  return { blogs, addBlog, updateBlog, deleteBlog, getBlogsByUser }
+  // Note: getBlogsByUser was filtering locally. New API `userBlogs` exists.
+  // Using local filter for now on fetched data if needed, or implement specific action.
+
+  return { blogs, fetchBlogs, addBlog, updateBlog, deleteBlog }
 })

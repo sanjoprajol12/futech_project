@@ -1,7 +1,7 @@
 <template>
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" v-if="open" @click.self="$emit('close')">
     <div class="bg-zinc-800 rounded-xl p-8 w-full max-w-md shadow-2xl">
-      <h2 class="text-2xl font-bold text-white mb-6">Edit Profile</h2>
+      <h2 class="text-2xl font-bold text-white mb-6">Update Profile</h2>
       
       <form @submit.prevent="submit" class="space-y-4">
         <div>
@@ -15,32 +15,12 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-white mb-2">Email</label>
+          <label class="block text-sm font-medium text-white mb-2">Email (optional)</label>
           <input
             v-model="form.email"
             type="email"
             class="w-full px-4 py-2 bg-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-            required
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-white mb-2">New Password (optional)</label>
-          <input
-            v-model="form.password"
-            type="password"
-            class="w-full px-4 py-2 bg-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-            placeholder="Leave blank to keep current password"
-          />
-        </div>
-
-        <div v-if="form.password">
-          <label class="block text-sm font-medium text-white mb-2">Confirm New Password</label>
-          <input
-            v-model="form.password_confirmation"
-            type="password"
-            class="w-full px-4 py-2 bg-zinc-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-            :required="!!form.password"
+            placeholder="Leave blank to keep current email"
           />
         </div>
 
@@ -49,7 +29,7 @@
             type="submit"
             class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
           >
-            Save Changes
+            Update Profile
           </button>
           <button
             type="button"
@@ -74,35 +54,29 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: []
-  save: [user: { name: string; email: string; password?: string; password_confirmation?: string }]
+  save: [user: { name: string; email?: string }]
 }>()
 
 const form = ref({
   name: '',
-  email: '',
-  password: '',
-  password_confirmation: ''
+  email: ''
 })
 
 watch(() => props.user, (newUser) => {
   if (newUser) {
     form.value.name = newUser.name || ''
-    form.value.email = newUser.email || ''
-    form.value.password = ''
-    form.value.password_confirmation = ''
+    form.value.email = '' // Don't pre-fill email for security
   }
 }, { immediate: true })
 
 const submit = () => {
   const updateData: any = {
-    name: form.value.name,
-    email: form.value.email
+    name: form.value.name
   }
   
-  // Only include password if user entered one
-  if (form.value.password) {
-    updateData.password = form.value.password
-    updateData.password_confirmation = form.value.password_confirmation
+  // Only include email if user entered one
+  if (form.value.email) {
+    updateData.email = form.value.email
   }
   
   emit('save', updateData)

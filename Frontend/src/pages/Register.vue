@@ -49,37 +49,45 @@
 </template>
 
 <script setup lang="ts">
-// Your script remains unchanged
 import { reactive } from 'vue'
-import api from '@/api'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const user = reactive({
   name: '',
-  last_name: '',
+  last_name: '', // Added last_name as per store interface
   email: '',
-
   password: '',
   password_confirmation: ''
 })
 
 const register = async () => {
   try {
-    const res = await api.post('/register', {
-      name: user.name,
+    await authStore.register({
+      name: user.name, // Sending 'name' as primary field
+      first_name: user.name, // Sending 'first_name' just in case backend uses it
+      last_name: user.last_name || '', 
       email: user.email,
       password: user.password,
       password_confirmation: user.password_confirmation
     })
-    // Added a more user-friendly message based on standard registration flow
-    alert('Registration successful! Please check your email to verify your account.')
+    // Save email for OTP step
+    localStorage.setItem('registration_email', user.email)
+    alert('Registration successful! Please check your email/OTP.')
     router.push('/two_factor')
   } catch (err: any) {
-    // Improved error handling to show specific backend errors
-    const errorMessage = err.response?.data?.message || err.response?.data?.errors?.email?.[0] || 'Registration failed. Please check your inputs.'
-    alert(errorMessage)
+    console.error(err)
+    // Extract validation errors
+    let msg = 'Registration failed.'
+    if (err.response?.data?.errors) {
+        msg += '\n' + JSON.stringify(err.response.data.errors, null, 2)
+    } else if (err.response?.data?.message) {
+        msg += '\n' + err.response.data.message
+    }
+    alert(msg)
   }
 }
 </script>

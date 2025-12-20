@@ -15,6 +15,9 @@
           <template v-else>
             <li><router-link to="/createblog">Create Blog</router-link></li>
             <li><router-link to="/profile">Profile</router-link></li>
+            <li class="user-greeting">
+              Hello, <strong>{{ authStore.user?.name || authStore.user?.email || 'User' }}</strong>
+            </li>
             <li>
               <button @click="handleLogout" class="logout-btn">Logout</button>
             </li>
@@ -33,22 +36,33 @@ import { storeToRefs } from 'pinia'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const { token } = storeToRefs(authStore)
+const { token, user } = storeToRefs(authStore)
 
-const isLoggedIn = computed(() => !!token.value || !!localStorage.getItem('auth_token'))
+const isLoggedIn = computed(() => {
+  return !!token.value || !!localStorage.getItem('token') || !!user.value
+})
 
 onMounted(async () => {
-  if (!token.value && localStorage.getItem('auth_token')) {
-    authStore.token = localStorage.getItem('auth_token') || ''
-    await authStore.fetchUser()
+  const storedToken = localStorage.getItem('token')
+  if (storedToken && !authStore.user) {
+    console.log('Fetching user on header mount...')
+    try {
+      await authStore.fetchUser()
+      console.log('User fetched:', authStore.user)
+    } catch (e) {
+      console.error('Failed to fetch user:', e)
+    }
   }
 })
 
-const handleLogout = () => {
-  localStorage.removeItem('auth_token')
-  authStore.token = ''
-  authStore.user = null
-  router.push('/login')
+const handleLogout = async () => {
+  try {
+    await authStore.logout()
+    alert('Logged out successfully')
+    router.push('/login')
+  } catch (e) {
+    console.error(e)
+  }
 }
 </script>
 
@@ -97,5 +111,11 @@ const handleLogout = () => {
 }
 .no-underline {
   text-decoration: none;
+}
+.user-greeting {
+  color: white;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
 }
 </style>

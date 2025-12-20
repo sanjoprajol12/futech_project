@@ -19,7 +19,7 @@
         </h1>
 
         <p class="text-zinc-400 mb-6">
-          By {{ blog.author || 'Anonymous' }} • {{ formattedDate }}
+          By {{ getAuthorName }} • {{ formattedDate }}
         </p>
 
         <div
@@ -50,25 +50,44 @@ const blog = ref<Blog | null>(null)
 const loading = ref(true)
 const error = ref('')
 
-onMounted(() => {
+onMounted(async () => {
   const id = Number(route.params.id)
-  const foundBlog = getBlogById(id)
+  try {
+    const foundBlog = await getBlogById(id)
+    console.log('Blog detail fetched:', foundBlog)
 
-  if (!foundBlog) {
-    error.value = 'Blog not found'
-  } else {
-    blog.value = foundBlog
+    if (!foundBlog) {
+        error.value = 'Blog not found'
+    } else {
+        blog.value = foundBlog
+    }
+  } catch (e: any) {
+      console.error('Error fetching blog:', e)
+      error.value = 'Error loading blog: ' + (e.response?.data?.message || e.message)
   }
 
   loading.value = false
 })
 
 const formattedDate = computed(() => {
-  if (!blog.value?.date) return ''
-  return new Date(blog.value.date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+  if (!blog.value?.created_at) return ''
+  try {
+    return new Date(blog.value.created_at).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  } catch {
+    return ''
+  }
+})
+
+// Get author name from author object or string
+const getAuthorName = computed(() => {
+  if (!blog.value?.author) return 'Anonymous'
+  const author = blog.value.author
+  if (typeof author === 'string') return author
+  if (typeof author === 'object') return author.name || author.email || 'Anonymous'
+  return 'Anonymous'
 })
 </script>

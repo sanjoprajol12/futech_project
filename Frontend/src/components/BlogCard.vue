@@ -2,7 +2,7 @@
   <div class="blog-card">
     <h3 class="blog-title">{{ blog.title }}</h3>
     <p class="author">
-      By {{ blog.author || 'Anonymous' }} 
+      By {{ getAuthorName(blog.author) }} 
       <span v-if="blog.created_at"> | {{ formatDate(blog.created_at) }}</span>
     </p>
     <p class="content">{{ truncateContent(blog.content) }}</p>
@@ -22,6 +22,14 @@ interface Blog {
 const props = defineProps<{
   blog: Blog
 }>()
+
+// Get author name from author object or string
+const getAuthorName = (author: any): string => {
+  if (!author) return 'Anonymous'
+  if (typeof author === 'string') return author
+  if (typeof author === 'object') return author.name || author.email || 'Anonymous'
+  return 'Anonymous'
+}
 
 // Truncate content to show snippet
 const truncateContent = (content: string) => {

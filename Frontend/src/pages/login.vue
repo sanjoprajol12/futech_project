@@ -15,7 +15,7 @@
             v-model="email" 
             
             required 
-            class="rounded-lg w-full text-white h-10 border border-white "
+            class="rounded-lg w-full text-white h-10 border border-white bg-zinc-700 p-2"
           />
         </div>
 
@@ -27,13 +27,13 @@
             v-model="password" 
             
             required 
-            class="rounded-lg w-full text-white h-10 border border-white "
+            class="rounded-lg w-full text-white h-10 border border-white bg-zinc-700 p-2"
           />
         </div>
 
         <button 
           type="submit" 
-          class="boarder-solid bg-white text-black pa-3 rounded-lg w-full"
+          class="bg-white text-black p-3 rounded-lg w-full font-semibold hover:bg-gray-200"
           >
           login
         </button>
@@ -56,6 +56,19 @@
 
           <p></p>
         </div>
+        
+        <!-- Resend Verification Email Option -->
+        <div class="mt-4 pt-4 border-t border-gray-600 text-center">
+          <p class="text-sm text-gray-400 mb-2">Email not verified?</p>
+          <button 
+            type="button"
+            @click="resendVerification" 
+            class="text-blue-400 hover:text-blue-300 underline text-sm"
+            :disabled="resending"
+          >
+            {{ resending ? 'Sending...' : 'Resend Verification Email' }}
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -64,35 +77,73 @@
 <script setup lang="ts">
 // Script remains the same
 import { ref } from 'vue'
-import api from '@/api'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const email = ref('')
 const password = ref('')
+const resending = ref(false)
 
 const login = async () => {
   try {
-    const res = await api.post('/login', {
+    console.log('Attempting login with:', email.value)
+    
+    await authStore.login({
       email: email.value,
       password: password.value,
     });
 
-    // Save token correctly — note the nested data
-    const token = res.data.data.token; // <-- THIS is the token
-    localStorage.setItem('auth_token', token);
+    console.log('Login successful, auth store state:', {
+      user: authStore.user,
+      token: authStore.token
+    });
 
-    console.log('Login successful, token saved:', token);
-
-    alert(res.data.message);
-    router.push('/two_factor');
+    alert('Login Successful');
+    
+    // Redirect to profile
+    console.log('Redirecting to /profile...')
+    await router.push('/profile');
+    
   } catch (err: any) {
-    const errorMessage = err.response?.data?.message || 'Login failed. Check credentials';
+    console.error('Login error:', err)
+    let errorMessage = 'Login failed. Check credentials';
+    
+    // Check if error is due to unverified email
+    if (err.response?.data?.message) {
+        errorMessage = err.response.data.message
+        
+        // If email not verified, save email for resend functionality
+        if (errorMessage.toLowerCase().includes('verify') || errorMessage.toLowerCase().includes('unverified')) {
+            localStorage.setItem('registration_email', email.value)
+        }
+    }
+    
     alert(errorMessage);
   }
 };
 
-
-
+const resendVerification = async () => {
+    if (!email.value) {
+        alert('Please enter your email address first')
+        return
+    }
+    
+    try {
+        resending.value = true
+        // Save email for potential OTP verification
+        localStorage.setItem('registration_email', email.value)
+        
+        await authStore.sendOtp(email.value)
+        alert('Verification email sent! Please check your inbox and verify your email.')
+        router.push('/two_factor')
+    } catch (err: any) {
+        console.error(err)
+        alert('Failed to send verification email: ' + (err.response?.data?.message || err.message))
+    } finally {
+        resending.value = false
+    }
+}
 </script>
